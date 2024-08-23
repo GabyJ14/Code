@@ -1,0 +1,9 @@
+"0","g <- ghana_trade_gdp %>% ggplot() + "
+"0","geom_line(aes(x = Year, y = Trade_to_GDP, color = Year), alpha = 0.8, "
+"0","    size = 1)"
+"2","Warning:"
+"2"," [38;5;255mUsing `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+[36mℹ[38;5;255m Please use `linewidth` instead.
+[90mThis warning is displayed once every 8 hours.[38;5;255m
+[90mCall `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.[38;5;255m[39m
+"

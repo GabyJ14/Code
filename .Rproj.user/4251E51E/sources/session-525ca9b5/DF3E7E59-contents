@@ -1,0 +1,387 @@
+---
+title: "README"
+output: html_document
+date: "2024-08-22"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(tidyverse)
+```
+
+This is the readme file for Problem Set 2 for International Trade. 
+
+
+Reading in files:
+
+
+```{r}
+ghana_exports_destinations <- read.csv("C:/Users/gabyd/Desktop/International Trade/Tuts/Problem Set 2/Code/data/ghana_exports_by_country.csv")
+ghana_exports_by_product <- read.csv("C:/Users/gabyd/Desktop/International Trade/Tuts/Problem Set 2/Code/data/ghana_exports_product.csv")
+ghana_import_sources <- read.csv("C:/Users/gabyd/Desktop/International Trade/Tuts/Problem Set 2/Code/data/ghana_imports_country.csv")
+ghana_imports_by_product <- read.csv("C:/Users/gabyd/Desktop/International Trade/Tuts/Problem Set 2/Code/data/ghana_imports_product.csv")
+ghana_share_exports_region <- read.csv("C:/Users/gabyd/Desktop/International Trade/Tuts/Problem Set 2/Code/data/ghana_exports_share_region.csv")
+ghana_trade_gdp <- read.csv("C:/Users/gabyd/Desktop/International Trade/Tuts/Problem Set 2/Code/data/ghana_trade_gdp.csv")
+world_exports_by_product <- read.csv("C:/Users/gabyd/Desktop/International Trade/Tuts/Problem Set 2/Code/data/world_exports_product.csv")
+world_imports_by_product <- read.csv("C:/Users/gabyd/Desktop/International Trade/Tuts/Problem Set 2/Code/data/world_imports_country.csv")
+
+
+```
+
+Question 1
+a)Top five export and import products over the past 10 years. [5 marks]
+
+The top 5 export products of Ghana.
+
+```{r}
+#top 5 exports of every year
+X2014_df <- ghana_exports_by_product %>% select(Product,X2014) %>% arrange(-X2014) %>% head(6) 
+X2015_df <- ghana_exports_by_product %>% select(Product,X2015) %>% arrange(-X2015) %>% head(6) 
+X2016_df <- ghana_exports_by_product %>% select(Product,X2016) %>% arrange(-X2016) %>% head(6) 
+X2017_df <- ghana_exports_by_product %>% select(Product,X2017) %>% arrange(-X2017) %>% head(6) 
+X2018_df <- ghana_exports_by_product %>% select(Product,X2018) %>% arrange(-X2018) %>% head(6) 
+X2019_df <- ghana_exports_by_product %>% select(Product,X2019) %>% arrange(-X2019) %>% head(6) 
+X2020_df <- ghana_exports_by_product %>% select(Product,X2020) %>% arrange(-X2020) %>% head(6) 
+X2021_df <- ghana_exports_by_product %>% select(Product,X2021) %>% arrange(-X2021) %>% head(6) 
+X2022_df <- ghana_exports_by_product %>% select(Product,X2022) %>% arrange(-X2022) %>% head(6) 
+X2023_df <- ghana_exports_by_product %>% select(Product,X2023) %>% arrange(-X2023) %>% head(6) 
+
+#Remove the all products row
+X2014_df <- X2014_df[-1,]
+X2015_df <- X2015_df[-1,]
+X2016_df <- X2016_df[-1,]
+X2017_df <- X2017_df[-1,]
+X2018_df <- X2018_df[-1,]
+X2019_df <- X2019_df[-1,]
+X2020_df <- X2020_df[-1,]
+X2021_df <- X2021_df[-1,]
+X2022_df <- X2022_df[-1,]
+X2023_df <- X2023_df[-1,]
+
+#here I'm also adding calculating a Share variable that shows the share of the specific product in the top 5. Note, this is not the share of All products, but rather the share of the top 5 products so that the bar sums to 100.
+X2014_df <- X2014_df %>% mutate(Year = "2014") %>% mutate(Share = (X2014/(sum(X2014))*100)) 
+X2015_df <- X2015_df %>% mutate(Year = "2015") %>% mutate(Share = (X2015/(sum(X2015))*100))
+X2016_df <- X2016_df %>% mutate(Year = "2016") %>% mutate(Share = (X2016/(sum(X2016))*100))
+X2017_df <- X2017_df %>% mutate(Year = "2017") %>% mutate(Share = (X2017/(sum(X2017))*100))
+X2018_df <- X2018_df %>% mutate(Year = "2018") %>% mutate(Share = (X2018/(sum(X2018))*100))
+X2019_df <- X2019_df %>% mutate(Year = "2019") %>% mutate(Share = (X2019/(sum(X2019))*100))
+X2020_df <- X2020_df %>% mutate(Year = "2020") %>% mutate(Share = (X2020/(sum(X2020))*100))
+X2021_df <- X2021_df %>% mutate(Year = "2021") %>% mutate(Share = (X2021/(sum(X2021))*100))
+X2022_df <- X2022_df %>% mutate(Year = "2022") %>% mutate(Share = (X2022/(sum(X2022))*100))
+X2023_df <- X2023_df %>% mutate(Year = "2023") %>% mutate(Share = (X2023/(sum(X2023))*100))
+
+#shorten the product labels for the plot legend
+X2014_df$Product <- substr(X2014_df$Product, 1, 30)
+X2015_df$Product <- substr(X2015_df$Product, 1, 30)
+X2016_df$Product <- substr(X2016_df$Product, 1, 30)
+X2017_df$Product <- substr(X2017_df$Product, 1, 30)
+X2018_df$Product <- substr(X2018_df$Product, 1, 30)
+X2019_df$Product <- substr(X2019_df$Product, 1, 30)
+X2020_df$Product <- substr(X2020_df$Product, 1, 30)
+X2021_df$Product <- substr(X2021_df$Product, 1, 30)
+X2022_df$Product <- substr(X2022_df$Product, 1, 30)
+X2023_df$Product <- substr(X2023_df$Product, 1, 30)
+
+combined_df <- bind_rows(X2014_df, X2015_df, X2016_df, X2017_df, X2018_df, X2019_df, X2021_df, X2022_df, X2023_df)
+
+
+plot <- ggplot(combined_df, aes(x = Year, y = Share, fill = Product)) +
+        geom_bar(position="stack", stat = "identity") +
+        theme_classic() +
+    scale_fill_brewer(palette="Paired") +
+    theme(
+    legend.text = element_text(size = 6,vjust = 0.1), 
+    legend.position = "bottom",
+    legend.key.width = unit(0.50, "cm"),
+    legend.key.size = unit(0.4, "cm"))
+ #+guides(color = guide_legend(ncol  = 2, nrow = 5))
+
+    plot
+
+```
+
+The top 5 imports for the past 10 years in Ghana.
+```{r}
+#top 5 imports over 10 years
+X2014_df <- ghana_imports_by_product %>% select(Product,X2014) %>% arrange(-X2014) %>% head(6) 
+X2015_df <- ghana_imports_by_product %>% select(Product,X2015) %>% arrange(-X2015) %>% head(6) 
+X2016_df <- ghana_imports_by_product %>% select(Product,X2016) %>% arrange(-X2016) %>% head(6) 
+X2017_df <- ghana_imports_by_product %>% select(Product,X2017) %>% arrange(-X2017) %>% head(6) 
+X2018_df <- ghana_imports_by_product %>% select(Product,X2018) %>% arrange(-X2018) %>% head(6) 
+X2019_df <- ghana_imports_by_product %>% select(Product,X2019) %>% arrange(-X2019) %>% head(6) 
+X2020_df <- ghana_imports_by_product %>% select(Product,X2020) %>% arrange(-X2020) %>% head(6) 
+X2021_df <- ghana_imports_by_product %>% select(Product,X2021) %>% arrange(-X2021) %>% head(6) 
+X2022_df <- ghana_imports_by_product %>% select(Product,X2022) %>% arrange(-X2022) %>% head(6) 
+X2023_df <- ghana_imports_by_product %>% select(Product,X2023) %>% arrange(-X2023) %>% head(6) 
+
+#remove the first row that is All products
+X2014_df <- X2014_df[-1,]
+X2015_df <- X2015_df[-1,]
+X2016_df <- X2016_df[-1,]
+X2017_df <- X2017_df[-1,]
+X2018_df <- X2018_df[-1,]
+X2019_df <- X2019_df[-1,]
+X2020_df <- X2020_df[-1,]
+X2021_df <- X2021_df[-1,]
+X2022_df <- X2022_df[-1,]
+X2023_df <- X2023_df[-1,]
+
+#here I'm also adding calculating a Share variable that shows the share of the specific product in the top 5. Note, this is not the share of All products, but rather the share of the top 5 products so that the bar sums to 100.
+X2014_df <- X2014_df %>% mutate(Year = "2014") %>% mutate(Share = (X2014/(sum(X2014))*100)) 
+X2015_df <- X2015_df %>% mutate(Year = "2015") %>% mutate(Share = (X2015/(sum(X2015))*100))
+X2016_df <- X2016_df %>% mutate(Year = "2016") %>% mutate(Share = (X2016/(sum(X2016))*100))
+X2017_df <- X2017_df %>% mutate(Year = "2017") %>% mutate(Share = (X2017/(sum(X2017))*100))
+X2018_df <- X2018_df %>% mutate(Year = "2018") %>% mutate(Share = (X2018/(sum(X2018))*100))
+X2019_df <- X2019_df %>% mutate(Year = "2019") %>% mutate(Share = (X2019/(sum(X2019))*100))
+X2020_df <- X2020_df %>% mutate(Year = "2020") %>% mutate(Share = (X2020/(sum(X2020))*100))
+X2021_df <- X2021_df %>% mutate(Year = "2021") %>% mutate(Share = (X2021/(sum(X2021))*100))
+X2022_df <- X2022_df %>% mutate(Year = "2022") %>% mutate(Share = (X2022/(sum(X2022))*100))
+X2023_df <- X2023_df %>% mutate(Year = "2023") %>% mutate(Share = (X2023/(sum(X2023))*100))
+
+#shorten the product labels for the plot legend
+X2014_df$Product <- substr(X2014_df$Product, 1, 30)
+X2015_df$Product <- substr(X2015_df$Product, 1, 30)
+X2016_df$Product <- substr(X2016_df$Product, 1, 30)
+X2017_df$Product <- substr(X2017_df$Product, 1, 30)
+X2018_df$Product <- substr(X2018_df$Product, 1, 30)
+X2019_df$Product <- substr(X2019_df$Product, 1, 30)
+X2020_df$Product <- substr(X2020_df$Product, 1, 30)
+X2021_df$Product <- substr(X2021_df$Product, 1, 30)
+X2022_df$Product <- substr(X2022_df$Product, 1, 30)
+X2023_df$Product <- substr(X2023_df$Product, 1, 30)
+
+combined_df <- bind_rows(X2014_df, X2015_df, X2016_df, X2017_df, X2018_df, X2019_df, X2021_df, X2022_df, X2023_df)
+
+
+plot <- ggplot(combined_df, aes(x = Year, y = Share, fill = Product)) +
+        geom_bar(position="stack", stat = "identity") +
+        theme_classic() +
+    scale_fill_brewer(palette="Paired") +
+    theme(
+    legend.text = element_text(size = 6,vjust = 0.1), 
+    legend.position = "bottom",
+    legend.key.width = unit(0.50, "cm"),
+    legend.key.size = unit(0.4, "cm"))
+ #+guides(color = guide_legend(ncol  = 2, nrow = 5))
+
+    plot
+```
+
+b) Top five export destinations over the past 10 years. [5 marks]
+
+```{r}
+#the top 5 countries to where Ghana exports good over the past 10 years.
+X2014_df <- ghana_exports_destinations %>% select(Importers,X2014) %>% arrange(-X2014) %>% head(6) 
+X2015_df <- ghana_exports_destinations %>% select(Importers,X2015) %>% arrange(-X2015) %>% head(6) 
+X2016_df <- ghana_exports_destinations %>% select(Importers,X2016) %>% arrange(-X2016) %>% head(6) 
+X2017_df <- ghana_exports_destinations %>% select(Importers,X2017) %>% arrange(-X2017) %>% head(6) 
+X2018_df <- ghana_exports_destinations %>% select(Importers,X2018) %>% arrange(-X2018) %>% head(6) 
+X2019_df <- ghana_exports_destinations %>% select(Importers,X2019) %>% arrange(-X2019) %>% head(6) 
+X2020_df <- ghana_exports_destinations %>% select(Importers,X2020) %>% arrange(-X2020) %>% head(6) 
+X2021_df <- ghana_exports_destinations %>% select(Importers,X2021) %>% arrange(-X2021) %>% head(6) 
+X2022_df <- ghana_exports_destinations %>% select(Importers,X2022) %>% arrange(-X2022) %>% head(6) 
+X2023_df <- ghana_exports_destinations %>% select(Importers,X2023) %>% arrange(-X2023) %>% head(6) 
+
+#Remove the World row
+X2014_df <- X2014_df[-1,]
+X2015_df <- X2015_df[-1,]
+X2016_df <- X2016_df[-1,]
+X2017_df <- X2017_df[-1,]
+X2018_df <- X2018_df[-1,]
+X2019_df <- X2019_df[-1,]
+X2020_df <- X2020_df[-1,]
+X2021_df <- X2021_df[-1,]
+X2022_df <- X2022_df[-1,]
+X2023_df <- X2023_df[-1,]
+
+#here I'm also adding calculating a Share variable that shows the share of the specific country in the top 5. Note, this is not the share of country in the world, but rather the share of the top 5 countries so that the bar sums to 100.
+X2014_df <- X2014_df %>% mutate(Year = "2014") %>% mutate(Share = (X2014/(sum(X2014))*100)) 
+X2015_df <- X2015_df %>% mutate(Year = "2015") %>% mutate(Share = (X2015/(sum(X2015))*100))
+X2016_df <- X2016_df %>% mutate(Year = "2016") %>% mutate(Share = (X2016/(sum(X2016))*100))
+X2017_df <- X2017_df %>% mutate(Year = "2017") %>% mutate(Share = (X2017/(sum(X2017))*100))
+X2018_df <- X2018_df %>% mutate(Year = "2018") %>% mutate(Share = (X2018/(sum(X2018))*100))
+X2019_df <- X2019_df %>% mutate(Year = "2019") %>% mutate(Share = (X2019/(sum(X2019))*100))
+X2020_df <- X2020_df %>% mutate(Year = "2020") %>% mutate(Share = (X2020/(sum(X2020))*100))
+X2021_df <- X2021_df %>% mutate(Year = "2021") %>% mutate(Share = (X2021/(sum(X2021))*100))
+X2022_df <- X2022_df %>% mutate(Year = "2022") %>% mutate(Share = (X2022/(sum(X2022))*100))
+X2023_df <- X2023_df %>% mutate(Year = "2023") %>% mutate(Share = (X2023/(sum(X2023))*100))
+
+combined_df <- bind_rows(X2014_df, X2015_df, X2016_df, X2017_df, X2018_df, X2019_df, X2021_df, X2022_df, X2023_df)
+
+
+plot <- ggplot(combined_df, aes(x = Year, y = Share, fill = Importers)) +
+        geom_bar(position="stack", stat = "identity") +
+        theme_classic() +
+    scale_fill_brewer(palette="Paired") +
+    theme(
+    legend.text = element_text(size = 6,vjust = 0.1), 
+    legend.position = "bottom",
+    legend.key.width = unit(0.50, "cm"),
+    legend.key.size = unit(0.4, "cm"))
+ #+guides(color = guide_legend(ncol  = 2, nrow = 5))
+
+    plot
+
+
+
+
+```
+
+c) Top five import sources over the past 10 years. [5 marks]
+```{r}
+#the top 5 countries from where Ghana imports goods over the past 10 years.
+X2014_df <- ghana_import_sources %>% select(Exporters,X2014) %>% arrange(-X2014) %>% head(6) 
+X2015_df <- ghana_import_sources %>% select(Exporters,X2015) %>% arrange(-X2015) %>% head(6) 
+X2016_df <- ghana_import_sources %>% select(Exporters,X2016) %>% arrange(-X2016) %>% head(6) 
+X2017_df <- ghana_import_sources %>% select(Exporters,X2017) %>% arrange(-X2017) %>% head(6) 
+X2018_df <- ghana_import_sources %>% select(Exporters,X2018) %>% arrange(-X2018) %>% head(6) 
+X2019_df <- ghana_import_sources %>% select(Exporters,X2019) %>% arrange(-X2019) %>% head(6) 
+X2020_df <- ghana_import_sources %>% select(Exporters,X2020) %>% arrange(-X2020) %>% head(6) 
+X2021_df <- ghana_import_sources %>% select(Exporters,X2021) %>% arrange(-X2021) %>% head(6) 
+X2022_df <- ghana_import_sources %>% select(Exporters,X2022) %>% arrange(-X2022) %>% head(6) 
+X2023_df <- ghana_import_sources %>% select(Exporters,X2023) %>% arrange(-X2023) %>% head(6) 
+
+#Remove the World row
+X2014_df <- X2014_df[-1,]
+X2015_df <- X2015_df[-1,]
+X2016_df <- X2016_df[-1,]
+X2017_df <- X2017_df[-1,]
+X2018_df <- X2018_df[-1,]
+X2019_df <- X2019_df[-1,]
+X2020_df <- X2020_df[-1,]
+X2021_df <- X2021_df[-1,]
+X2022_df <- X2022_df[-1,]
+X2023_df <- X2023_df[-1,]
+
+#here I'm also adding calculating a Share variable that shows the share of the specific country in the top 5. Note, this is not the share of country in the world, but rather the share of the top 5 countries so that the bar sums to 100.
+X2014_df <- X2014_df %>% mutate(Year = "2014") %>% mutate(Share = (X2014/(sum(X2014))*100)) 
+X2015_df <- X2015_df %>% mutate(Year = "2015") %>% mutate(Share = (X2015/(sum(X2015))*100))
+X2016_df <- X2016_df %>% mutate(Year = "2016") %>% mutate(Share = (X2016/(sum(X2016))*100))
+X2017_df <- X2017_df %>% mutate(Year = "2017") %>% mutate(Share = (X2017/(sum(X2017))*100))
+X2018_df <- X2018_df %>% mutate(Year = "2018") %>% mutate(Share = (X2018/(sum(X2018))*100))
+X2019_df <- X2019_df %>% mutate(Year = "2019") %>% mutate(Share = (X2019/(sum(X2019))*100))
+X2020_df <- X2020_df %>% mutate(Year = "2020") %>% mutate(Share = (X2020/(sum(X2020))*100))
+X2021_df <- X2021_df %>% mutate(Year = "2021") %>% mutate(Share = (X2021/(sum(X2021))*100))
+X2022_df <- X2022_df %>% mutate(Year = "2022") %>% mutate(Share = (X2022/(sum(X2022))*100))
+X2023_df <- X2023_df %>% mutate(Year = "2023") %>% mutate(Share = (X2023/(sum(X2023))*100))
+
+combined_df <- bind_rows(X2014_df, X2015_df, X2016_df, X2017_df, X2018_df, X2019_df, X2021_df, X2022_df, X2023_df)
+
+
+plot <- ggplot(combined_df, aes(x = Year, y = Share, fill = Exporters)) +
+        geom_bar(position="stack", stat = "identity") +
+        theme_classic() +
+    scale_fill_brewer(palette="Paired") +
+    theme(
+    legend.text = element_text(size = 6,vjust = 0.1), 
+    legend.position = "bottom",
+    legend.key.width = unit(0.50, "cm"),
+    legend.key.size = unit(0.4, "cm"))
+ #+guides(color = guide_legend(ncol  = 2, nrow = 5))
+
+    plot
+
+
+
+```
+
+d) Share of exports by region over the past 10 years. [5 marks]
+
+```{r}
+#the share of exports by region over the past 10 years for Ghana
+X2014_df <- ghana_share_exports_region %>% select(Regions,X2014) %>% mutate(Year = "2014") %>% mutate(Value = X2014)
+X2015_df <- ghana_share_exports_region %>% select(Regions,X2015)  %>% mutate(Year = "2015") %>% mutate(Value = X2015)
+X2016_df <- ghana_share_exports_region %>% select(Regions,X2016)  %>% mutate(Year = "2016") %>% mutate(Value = X2016)
+X2017_df <- ghana_share_exports_region %>% select(Regions,X2017)  %>% mutate(Year = "2017") %>% mutate(Value = X2017)
+X2018_df <- ghana_share_exports_region %>% select(Regions,X2018)  %>% mutate(Year = "2018") %>% mutate(Value = X2018)
+X2019_df <- ghana_share_exports_region %>% select(Regions,X2019)  %>% mutate(Year = "2019") %>% mutate(Value = X2019)
+X2020_df <- ghana_share_exports_region %>% select(Regions,X2020)  %>% mutate(Year = "2020") %>% mutate(Value = X2020)
+X2021_df <- ghana_share_exports_region %>% select(Regions,X2021)  %>% mutate(Year = "2021") %>% mutate(Value = X2021)
+X2022_df <- ghana_share_exports_region %>% select(Regions,X2022) %>% mutate(Year = "2022") %>% mutate(Value = X2022)
+X2023_df <- ghana_share_exports_region %>% select(Regions,X2023)  %>% mutate(Year = "2023") %>% mutate(Value = X2023)
+
+
+combined_df <- bind_rows(X2014_df, X2015_df, X2016_df, X2017_df, X2018_df, X2019_df, X2021_df, X2022_df, X2023_df)
+
+
+plot <- ggplot(combined_df, aes(x = Year, y = Value, fill = Regions)) +
+        geom_bar(position="stack", stat = "identity") +
+        theme_classic() +
+    scale_fill_brewer(palette="Paired") +
+    theme(
+    legend.text = element_text(size = 6,vjust = 0.1), 
+    legend.position = "bottom",
+    legend.key.width = unit(0.50, "cm"),
+    legend.key.size = unit(0.4, "cm"))
+ #+guides(color = guide_legend(ncol  = 2, nrow = 5))
+
+    plot
+
+```
+
+e) Share of trade (exports and imports) to GDP over the past 10 years.
+```{r}
+plot <- ggplot(ghana_trade_gdp, aes(x = Year, y = Trade_to_GDP)) +
+        geom_line(size=0.7) +
+        theme_bw() +
+    geom_line(color="blue")+
+  geom_point() +
+    labs(x = "Year", 
+    y = "Trade to GDP (%)", title = "Trade to GDP (%) for Ghana from 2014-2023")
+
+    plot
+```
+
+QUESTION 2 (20 Marks)
+Use the data you accessed from one of the standard trade database (e.g WITS, COMTRADE etc.) to compute and discuss the following trade indicators for your country of research for the top 10 export products:
+
+a) Revealed Comparative Advantage (RCA) [10 marks]
+
+Here I have to compute the RCA for the top 10 exporting products. I am unsure if this should only be for 2023? 
+The formula for RCA is: (Export value of a product from Ghana/Total exports from Ghana)/(World export value of the product/Total world exports)
+
+I first create a dataframe to arrange the data to make it easier to compute the RCA.
+
+
+```{r}
+#get the top 10 exporting products of Ghana for 2023
+ghana_temp_df <- ghana_exports_by_product %>% select(Product,X2023) %>% arrange(-X2023) %>% head(11)
+#ghana_temp_df$Product <- substr(ghana_temp_df$Product, 1, 30)
+
+world_temp_df <- world_exports_by_product
+#world_temp_df$Product<- substr(world_temp_df$Product, 1, 30)
+world_temp_df<- world_temp_df %>% select(Product, X2023) %>% filter(Product %in%  ghana_temp_df$Product)
+
+#Now I have two dataframes with the top 10 exporting products of Ghana for 2023. 
+#I have to merge these dataframes now to make it easier to work with. 
+
+merged_df <- list(ghana_temp_df, world_temp_df)
+merged_df <- merged_df %>%  reduce(full_join, by = 'Product')
+colnames(merged_df) <-  c("Product","Ghana" , "World")
+
+```
+The merged_df contains all of the information I need to compute the RCA. 
+The formula for RCA is: (Export value of a product from Ghana/Total exports from Ghana)/(World export value of the product/Total world exports)
+
+```{r}
+RCA_df <- merged_df %>% mutate(Ghana_rca = (merged_df$Ghana)/(merged_df$Ghana[1])) %>% 
+    mutate(World_rca = (merged_df$World)/(merged_df$World[1])) 
+RCA_df <- RCA_df %>% mutate(RCA_final = Ghana_rca/World_rca)
+
+#the RCA_final variable has the RCA indicator.
+#creating a table to display easier
+RCA_final_data <- RCA_df %>% select(Product, RCA_final)
+
+#writing to excel
+write.csv(RCA_final_data, file = "RCA.csv", row.names = FALSE)
+```
+
+
+b) Export Specialization Index (ESI) [10 marks]
+The formula for ESI: Exports of a product from Ghana as a share of Ghana’s total exports/ World exports of a product as a share of total world exports
+​
+
+
+
+
