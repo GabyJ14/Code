@@ -1,0 +1,14 @@
+"0","plot <- ggplot(ghana_trade_gdp, aes(x = Year, y = Trade_to_GDP)) +"
+"0","        geom_line(size=0.7) +"
+"0","        theme_bw() +"
+"0","    geom_line(color=""blue"")+"
+"0","  geom_point() +"
+"0","    labs(x = ""Year"", "
+"0","    y = ""Trade to GDP (%)"", title = ""Trade to GDP (%) for Ghana from 2014-2023"")"
+"2","Warning:"
+"2"," [38;5;255mUsing `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+[36mℹ[38;5;255m Please use `linewidth` instead.
+[90mThis warning is displayed once every 8 hours.[38;5;255m
+[90mCall `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.[38;5;255m[39m
+"
+"0","    plot"
